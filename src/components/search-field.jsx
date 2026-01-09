@@ -21,8 +21,10 @@ const SearchField = () => {
     fetchCourses();
   }, []);
 
-  const filteredCourses = courses.filter((course) =>
-    course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCourses = courses.filter(
+    (course) =>
+      course.courseName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.courseNumber.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) return <p>Loading courses...</p>;
