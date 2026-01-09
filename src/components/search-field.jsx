@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const SetTable = () => {
+const SearchField = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
+  useState(() => {
     const fetchCourses = async () => {
       try {
         const response = await fetch("/api/courses.json");
@@ -20,11 +21,21 @@ const SetTable = () => {
     fetchCourses();
   }, []);
 
+  const filteredCourses = courses.filter((course) =>
+    course.courseName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) return <p>Loading courses...</p>;
   if (error) return <p>Error loading courses: {error}</p>;
 
   return (
-    <>
+    <div>
+      <input
+        type="text"
+        placeholder="Search courses..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <table>
         <thead>
           <tr>
@@ -36,7 +47,7 @@ const SetTable = () => {
           </tr>
         </thead>
         <tbody>
-          {courses.map((course) => (
+          {filteredCourses.map((course) => (
             <tr key={course.id}>
               <td>{course.trimester}</td>
               <td>{course.courseNumber}</td>
@@ -47,30 +58,8 @@ const SetTable = () => {
           ))}
         </tbody>
       </table>
-      <table>
-        <thead>
-          <tr>
-            <th>Trimester</th>
-            <th>Course Number</th>
-            <th>Course Name</th>
-            <th>Semester Credits</th>
-            <th>Total Clock Hours</th>
-          </tr>
-        </thead>
-        <tbody>
-          {courses.map((course) => (
-            <tr key={course.id}>
-              <td>{course.trimester}</td>
-              <td>{course.courseNumber}</td>
-              <td>{course.courseName}</td>
-              <td>{course.semesterCredits}</td>
-              <td>{course.totalClockHours}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </>
+    </div>
   );
 };
 
-export default SetTable;
+export default SearchField;
