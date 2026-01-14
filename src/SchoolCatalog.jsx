@@ -9,6 +9,9 @@ export default function SchoolCatalog() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [sortKey, setSortKey] = useState("courseNumber");
+  const [sortDirection, setSortDirection] = useState("asc");
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -42,6 +45,41 @@ export default function SchoolCatalog() {
     );
   }, [courses, searchTerm]);
 
+  const handleSort = (key) => {
+    if (key === sortKey) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedCourses = useMemo(() => {
+    const copy = [...filteredCourses];
+    const direction = sortDirection === "asc" ? 1 : -1;
+
+    const numericKeys = new Set([
+      "trimester",
+      "semesterCredits",
+      "totalClockHours",
+    ]);
+
+    copy.sort((a, b) => {
+      if (numericKeys.has(sortKey)) {
+        return (Number(a[sortKey]) - Number(b[sortKey])) * direction;
+      }
+
+      const aValue = a[sortKey].toLowerCase();
+      const bValue = b[sortKey].toLowerCase();
+
+      if (aValue < bValue) return -1 * direction;
+      if (aValue > bValue) return 1 * direction;
+      return 0;
+    });
+
+    return copy;
+  }, [filteredCourses, sortKey, sortDirection]);
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
@@ -51,7 +89,9 @@ export default function SchoolCatalog() {
       {loading && <p>Loading courses...</p>}
       {error && <p>{error}</p>}
 
-      {!loading && !error && <SetTable courses={filteredCourses} />}
+      {!loading && !error && (
+        <SetTable courses={sortedCourses} onSort={handleSort} />
+      )}
 
       <div className="pagination">
         <button onClick={() => alert("Previous Page")}>Previous</button>

@@ -1,13 +1,13 @@
-const SetTable = ({ courses }) => {
+const SetTable = ({ courses, onSort }) => {
   return (
     <table>
       <thead>
         <tr>
-          <th>Trimester</th>
-          <th>Course Number</th>
-          <th>Course Name</th>
-          <th>Semester Credits</th>
-          <th>Total Clock Hours</th>
+          <th onClick={() => onSort("trimester")}>Trimester</th>
+          <th onClick={() => onSort("courseNumber")}>Course Number</th>
+          <th onClick={() => onSort("courseName")}>Course Name</th>
+          <th onClick={() => onSort("semesterCredits")}>Semester Credits</th>
+          <th onClick={() => onSort("totalClockHours")}>Total Clock Hours</th>
           <th>Enroll</th>
         </tr>
       </thead>
