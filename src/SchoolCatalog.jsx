@@ -54,8 +54,8 @@ export default function SchoolCatalog() {
       {!loading && !error && <SetTable courses={filteredCourses} />}
 
       <div className="pagination">
-        <button disabled>Previous</button>
-        <button disabled>Next</button>
+        <button onClick={() => alert("Previous Page")}>Previous</button>
+        <button onClick={() => alert("Next Page")}>Next</button>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ const SetTable = ({ courses }) => {
           <th>Course Name</th>
           <th>Semester Credits</th>
           <th>Total Clock Hours</th>
+          <th>Enroll</th>
         </tr>
       </thead>
 
@@ -20,7 +21,9 @@ const SetTable = ({ courses }) => {
             <td>{course.semesterCredits}</td>
             <td>{course.totalClockHours}</td>
             <td>
-              <button>Enroll</button>
+              <button onClick={() => alert(`Enrolled in ${course.courseName}`)}>
+                Enroll
+              </button>
             </td>
           </tr>
         ))}
