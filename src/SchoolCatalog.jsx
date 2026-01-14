@@ -1,55 +1,61 @@
+import { useEffect, useMemo, useState } from "react";
+import SearchField from "./components/search-field";
+import SetTable from "./components/Sch-cat-fetch";
+
 export default function SchoolCatalog() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch("/api/courses.json");
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+
+        const data = await response.json();
+        setCourses(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  const filteredCourses = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+
+    return courses.filter(
+      (course) =>
+        course.courseName.toLowerCase().includes(query) ||
+        course.courseNumber.toLowerCase().includes(query)
+    );
+  }, [courses, searchTerm]);
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
-      <input type="text" placeholder="Search" />
-      <table>
-        <thead>
-          <tr>
-            <th>Trimester</th>
-            <th>Course Number</th>
-            <th>Courses Name</th>
-            <th>Semester Credits</th>
-            <th>Total Clock Hours</th>
-            <th>Enroll</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1</td>
-            <td>PP1000</td>
-            <td>Beginning Procedural Programming</td>
-            <td>2</td>
-            <td>30</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>PP1100</td>
-            <td>Basic Procedural Programming</td>
-            <td>4</td>
-            <td>50</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
-          <tr>
-            <td>1</td>
-            <td>OS1000</td>
-            <td>Fundamentals of Open Source Operating Systems</td>
-            <td>2.5</td>
-            <td>37.5</td>
-            <td>
-              <button>Enroll</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+      <SearchField value={searchTerm} onChange={setSearchTerm} />
+
+      {loading && <p>Loading courses...</p>}
+      {error && <p>{error}</p>}
+
+      {!loading && !error && <SetTable courses={filteredCourses} />}
+
       <div className="pagination">
-        <button>Previous</button>
-        <button>Next</button>
+        <button disabled>Previous</button>
+        <button disabled>Next</button>
       </div>
     </div>
   );
