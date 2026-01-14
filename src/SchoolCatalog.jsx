@@ -12,6 +12,9 @@ export default function SchoolCatalog() {
   const [sortKey, setSortKey] = useState("courseNumber");
   const [sortDirection, setSortDirection] = useState("asc");
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const ROWS_PER_PAGE = 5;
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -80,6 +83,20 @@ export default function SchoolCatalog() {
     return copy;
   }, [filteredCourses, sortKey, sortDirection]);
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(sortedCourses.length / ROWS_PER_PAGE)
+  );
+
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * ROWS_PER_PAGE;
+    return sortedCourses.slice(startIndex, startIndex + ROWS_PER_PAGE);
+  }, [sortedCourses, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   return (
     <div className="school-catalog">
       <h1>School Catalog</h1>
@@ -90,12 +107,24 @@ export default function SchoolCatalog() {
       {error && <p>{error}</p>}
 
       {!loading && !error && (
-        <SetTable courses={sortedCourses} onSort={handleSort} />
+        <SetTable courses={paginatedCourses} onSort={handleSort} />
       )}
 
       <div className="pagination">
-        <button onClick={() => alert("Previous Page")}>Previous</button>
-        <button onClick={() => alert("Next Page")}>Next</button>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
