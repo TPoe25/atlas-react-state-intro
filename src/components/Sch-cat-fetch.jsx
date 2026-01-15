@@ -1,4 +1,12 @@
+import { useContext } from "react";
+import { EnrollmentContext } from "../context/Enroll-Context";
+
 const SetTable = ({ courses, onSort }) => {
+  const { enrolledCourses, enrollCourse } = useContext(EnrollmentContext);
+
+  const isEnrolled = (courseNumber) =>
+    enrolledCourses.some((c) => c.courseNumber === courseNumber);
+
   return (
     <table>
       <thead>
@@ -13,20 +21,27 @@ const SetTable = ({ courses, onSort }) => {
       </thead>
 
       <tbody>
-        {courses.map((course, index) => (
-          <tr key={`${course.courseNumber}-${index}`}>
-            <td>{course.trimester}</td>
-            <td>{course.courseNumber}</td>
-            <td>{course.courseName}</td>
-            <td>{course.semesterCredits}</td>
-            <td>{course.totalClockHours}</td>
-            <td>
-              <button onClick={() => alert(`Enrolled in ${course.courseName}`)}>
-                Enroll
-              </button>
-            </td>
-          </tr>
-        ))}
+        {courses.map((course, index) => {
+          const enrolled = isEnrolled(course.courseNumber);
+
+          return (
+            <tr key={`${course.courseNumber}-${index}`}>
+              <td>{course.trimester}</td>
+              <td>{course.courseNumber}</td>
+              <td>{course.courseName}</td>
+              <td>{course.semesterCredits}</td>
+              <td>{course.totalClockHours}</td>
+              <td>
+                <button
+                  onClick={() => enrollCourse(course)}
+                  disabled={enrolled}
+                >
+                  {enrolled ? "Enrolled" : "Enroll"}
+                </button>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
